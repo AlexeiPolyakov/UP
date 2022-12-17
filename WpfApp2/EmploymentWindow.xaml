@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp2"
         mc:Ignorable="d"
-        Title="Найм сотрудника" Height="400" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Foreground="#FF0D1117" Background="#FFEEEDED" OpacityMask="Black">
+        Title="Сотрудник" Height="400" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Foreground="#FF0D1117" Background="#FFEEEDED" OpacityMask="Black">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="8" />
@@ -51,7 +51,9 @@
 
 
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Grid.Row="7" Grid.Column="1">
-            <Button IsDefault="True" Click="Accept_Click" Foreground="#FF0D1117" Background="White">Добавить сотрудника</Button> 
+            <Button IsDefault="True" Click="Accept_Click" Foreground="#FF0D1117" Background="White">Ок</Button>
+            <Button IsDefault="True" Click="Accept_Click" Foreground="#FF0D1117" Background="White">Отмена</Button>
+
         </StackPanel>
     </Grid>
 </Window>

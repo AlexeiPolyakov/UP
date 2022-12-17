@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace WpfApp2
 {
@@ -22,6 +23,9 @@ namespace WpfApp2
     public partial class MainWindow : Window
     {
         ApplicationContext db = new ApplicationContext();
+        ExcelGenerator excelGenerator = new ExcelGenerator();
+        Excel hrreport = new Excel();
+        List<Employment> employments = new List<Employment>();
         public MainWindow()
         {
             InitializeComponent();
@@ -33,7 +37,7 @@ namespace WpfApp2
         {
             db.Database.EnsureCreated();
             db.Employments.Load();
-            DataContext= db.Employments.Local.ToObservableCollection();
+            DataContext = db.Employments.Local.ToObservableCollection();
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -63,10 +67,10 @@ namespace WpfApp2
                 Department = employment.Department
             });
 
-            if(EmploymentWindow.ShowDialog() == true)
+            if (EmploymentWindow.ShowDialog() == true)
             {
                 employment = db.Employments.Find(EmploymentWindow.Employment.Id);
-                if(employment != null)
+                if (employment != null)
                 {
                     employment.Id = EmploymentWindow.Employment.Id;
                     employment.Surname = EmploymentWindow.Employment.Surname;
@@ -79,9 +83,9 @@ namespace WpfApp2
                     db.SaveChanges();
                     employmentsList.Items.Refresh();
                 }
-             }
-
             }
+
+        }
         private void Delete_Click(object sender, EventArgs e)
         {
             Employment? employment = employmentsList.SelectedItem as Employment;
@@ -90,7 +94,7 @@ namespace WpfApp2
             db.SaveChanges();
         }
 
-        private void Info_Click(object sender,RoutedEventArgs e)
+        private void Info_Click(object sender, RoutedEventArgs e)
         {
             Employment? employment = employmentsList.SelectedItems as Employment;
             if (employment is null) return;
@@ -104,13 +108,15 @@ namespace WpfApp2
                     employmentsList.Items.Refresh();
                 }
             }
-        
+
         }
 
         private void employmentsList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Employment employment  = (sender as ListBox).SelectedItem as Employment;
-            InfoWindow InfoWindow = new InfoWindow(employment);
+            Employment? employment = ((ListBox)sender).SelectedItem as Employment;
+#pragma warning disable CS8604 // Возможно, аргумент-ссылка, допускающий значение NULL.
+            InfoWindow InfoWindow = new(employment: employment);
+#pragma warning restore CS8604 // Возможно, аргумент-ссылка, допускающий значение NULL.
             if (InfoWindow.ShowDialog() == true)
             {
                 employment = db.Employments.Find(InfoWindow.Employment.Id);
@@ -118,6 +124,20 @@ namespace WpfApp2
                 {
                     employmentsList.Items.Refresh();
                 }
+            }
+        }
+
+        private void CreateExelFile_Click(object sender, EventArgs e)
+        {
+            db.Employments.ForEachAsync(hrreport.Employments.Add);
+            var report = excelGenerator.Generate(hrreport);
+            try
+            {
+                File.WriteAllBytes("../../../Reports/Отчет отдела кадров.xlsx", report);
+            }
+            catch
+            {
+                MessageBox.Show("Пожалуйста,закройте файл и повторите сохранение", "Ошибка!", MessageBoxButton.OK);
             }
         }
     }
